@@ -1,0 +1,57 @@
+[build]
+builder = "NIXPACKS"
+
+# ── Service web : dashboard Flask ────────────────────────────────────────────
+[[services]]
+name = "web"
+
+[services.deploy]
+startCommand = "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2"
+healthcheckPath = "/"
+restartPolicyType = "ON_FAILURE"
+
+[services.variables]
+PORT = "8080"
+
+# ── Service cron : tracker.py (3×/semaine) ───────────────────────────────────
+# Run 1 — lundi 08:00 UTC   → variante 1
+[[services]]
+name = "cron-monday"
+
+[services.deploy]
+startCommand = "python tracker.py"
+restartPolicyType = "NEVER"
+
+[services.cron]
+schedule = "0 8 * * 1"
+
+[services.variables]
+RUN_NUMBER = "1"
+
+# Run 2 — mercredi 08:00 UTC → variante 2
+[[services]]
+name = "cron-wednesday"
+
+[services.deploy]
+startCommand = "python tracker.py"
+restartPolicyType = "NEVER"
+
+[services.cron]
+schedule = "0 8 * * 3"
+
+[services.variables]
+RUN_NUMBER = "2"
+
+# Run 3 — vendredi 08:00 UTC → variante 3
+[[services]]
+name = "cron-friday"
+
+[services.deploy]
+startCommand = "python tracker.py"
+restartPolicyType = "NEVER"
+
+[services.cron]
+schedule = "0 8 * * 5"
+
+[services.variables]
+RUN_NUMBER = "3"

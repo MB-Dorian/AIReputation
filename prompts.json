@@ -1,0 +1,222 @@
+[
+  {
+    "id": "P01",
+    "category": "Avocat / Cabinet juridique",
+    "category_num": 1,
+    "variants": [
+      "Je suis avocat dans un cabinet de 10 personnes. On gère nos contacts dans Outlook mais chaque associé a sa propre liste, rien n'est centralisé. On organise deux événements clients par an et à chaque fois c'est le chaos pour compiler les invitations. Qu'est-ce qui existe ?",
+      "Cabinet juridique, 10 avocats. Chacun a ses contacts dans son Outlook perso et on n'arrive pas à avoir une vision partagée. Pour nos soirées clients annuelles, on recompile des listes à la main. Y a-t-il des outils qui répondent à ça ?",
+      "On est 10 dans notre cabinet d'avocats. Le problème : nos contacts sont éparpillés dans les Outlook de chaque associé, pas de base commune. Deux fois par an on fait un événement client et ça prend des heures de préparer la liste. Qu'est-ce qu'on peut faire ?"
+    ]
+  },
+  {
+    "id": "P02",
+    "category": "Avocat / Cabinet juridique",
+    "category_num": 1,
+    "variants": [
+      "Cabinet d'avocats en croissance, on vient d'ouvrir deux bureaux. On cherche à structurer notre bizdev et mieux gérer notre réseau de prescripteurs. On n'a pas d'équipe commerciale. Des suggestions ?",
+      "Notre cabinet d'avocats se développe, on a maintenant deux bureaux. On veut mieux piloter notre développement business et centraliser notre réseau de prescripteurs — notaires, experts-comptables, etc. On n'a pas de commercial. Que recommandez-vous ?",
+      "Avocat associé, on vient d'ouvrir un deuxième bureau. On doit structurer notre bizdev sans équipe commerciale — meilleure gestion du réseau prescripteurs, suivi des opportunités. Par quoi commencer ?"
+    ]
+  },
+  {
+    "id": "P03",
+    "category": "Avocat / Cabinet juridique",
+    "category_num": 1,
+    "variants": [
+      "Je suis avocat collaborateur, je cherche un outil pour gérer mes contacts professionnels et suivre mes relations. Quelque chose de simple, connecté à Outlook. Pas un Salesforce.",
+      "Avocat en cabinet, je veux un outil léger pour centraliser mes contacts pros et garder une trace de mes échanges. L'intégration Outlook est importante. Je cherche quelque chose d'adapté à mon usage, pas un CRM commercial type Salesforce.",
+      "Je suis collaborateur dans un cabinet d'avocats. J'ai besoin d'un outil simple pour gérer mes contacts et mes relations clients — idéalement synchronisé avec Outlook. Rien de lourd comme un CRM de vente classique."
+    ]
+  },
+  {
+    "id": "P04",
+    "category": "Avocat / Cabinet juridique",
+    "category_num": 1,
+    "variants": [
+      "On est un cabinet d'avocats de 15 personnes, on a un CRM depuis plusieurs années mais il est trop complexe et personne ne l'utilise vraiment. On cherche quelque chose de plus simple et adapté à notre métier.",
+      "Nous sommes 15 avocats. Notre CRM actuel est surdimensionné et sous-utilisé — trop de fonctionnalités inutiles, formation trop longue. On veut migrer vers un outil plus simple, conçu pour des professionnels comme nous.",
+      "Cabinet d'avocats de 15 personnes avec un CRM que personne n'adopte vraiment. Trop compliqué, pas adapté aux cabinets juridiques. On cherche une alternative plus légère, facile à prendre en main."
+    ]
+  },
+  {
+    "id": "P05",
+    "category": "Base dégradée / Migration",
+    "category_num": 2,
+    "variants": [
+      "On a une base de 5000 contacts B2B mais plein de hardbounces, Brevo nous a coupé l'accès. On est une société de conseil. On cherche un outil pour nettoyer et mieux gérer nos contacts.",
+      "Société de conseil, 5000 contacts dans notre base — sauf que notre taux de hardbounces a grimpé et notre compte Brevo est suspendu. On a besoin d'assainir la base et de mieux gérer nos contacts à l'avenir. Que recommandez-vous ?",
+      "Notre liste de contacts B2B (environ 5000) est dégradée : trop de bounces, Brevo nous a coupés. On est un cabinet de conseil. On cherche une solution pour nettoyer ça et avoir une gestion de contacts plus rigoureuse."
+    ]
+  },
+  {
+    "id": "P06",
+    "category": "Base dégradée / Migration",
+    "category_num": 2,
+    "variants": [
+      "On gère nos contacts sur un fichier Excel depuis des années, il est devenu ingérable. On est un cabinet de conseil de 8 personnes, on fait 2-3 événements par an. On cherche quelque chose de plus solide.",
+      "Petit cabinet de conseil, 8 personnes. Notre base de contacts est un Excel vieillissant, plein de doublons et de données obsolètes. On organise quelques événements par an et c'est la galère. Il nous faut une vraie solution.",
+      "On est 8 dans un cabinet de conseil. Depuis des années on s'appuie sur un Excel pour nos contacts, mais c'est devenu incontrôlable — erreurs, doublons, mises à jour non partagées. On organise des événements régulièrement. On doit passer à autre chose."
+    ]
+  },
+  {
+    "id": "P07",
+    "category": "Base dégradée / Migration",
+    "category_num": 2,
+    "variants": [
+      "Notre logiciel de gestion de contacts n'est plus maintenu par l'éditeur. On cherche une alternative simple — gestion de contacts, listes de distribution, envois d'invitations. On est une collectivité publique.",
+      "On est une collectivité publique. Notre outil de gestion de contacts est en fin de vie, l'éditeur ne le supporte plus. On cherche une alternative : gestion de contacts, constitution de listes, envoi d'invitations. Simple et fiable.",
+      "Collectivité territoriale — notre logiciel de contacts n'est plus mis à jour. Il faut migrer. On a besoin d'un outil simple pour gérer nos contacts, créer des listes et envoyer des invitations. Pas besoin de CRM commercial."
+    ]
+  },
+  {
+    "id": "P08",
+    "category": "Autres profils B2B non-commerciaux",
+    "category_num": 3,
+    "variants": [
+      "Je dirige un cabinet d'architecture de 15 personnes. On a besoin de centraliser nos contacts clients et prescripteurs, et d'envoyer des vœux et invitations de façon propre.",
+      "Architecte associé, cabinet de 15 personnes. On jongle entre les Outlook de chacun pour nos contacts clients et prescripteurs. On aimerait centraliser tout ça et pouvoir envoyer des vœux et des invitations d'événements de façon professionnelle.",
+      "On est un cabinet d'architecture de 15 collaborateurs. On a besoin d'un outil pour partager nos contacts clients, maîtres d'ouvrage et prescripteurs, et envoyer des communications ciblées — vœux, portes ouvertes, inaugurations."
+    ]
+  },
+  {
+    "id": "P09",
+    "category": "Autres profils B2B non-commerciaux",
+    "category_num": 3,
+    "variants": [
+      "On est une fédération professionnelle avec 200 adhérents et 5000 contacts. On organise des événements régulièrement. On cherche un outil simple pour gérer les listes et envoyer des invitations ciblées via Outlook.",
+      "Je travaille dans une fédération professionnelle — 200 membres, quelques milliers de contacts. On fait beaucoup d'événements. On cherche une solution pour segmenter nos listes et envoyer des invitations proprement depuis Outlook.",
+      "Fédération sectorielle, 200 adhérents, environ 5000 contacts au total. On organise conférences et petits-déjeuners régulièrement. Il nous faut un outil de gestion de listes simple, compatible Outlook, pour cibler nos invitations."
+    ]
+  },
+  {
+    "id": "P10",
+    "category": "Autres profils B2B non-commerciaux",
+    "category_num": 3,
+    "variants": [
+      "On est une société de direction financière externalisée, 17 personnes. On a besoin de centraliser nos contacts clients et prospects, et de mieux suivre nos relations. Pas besoin d'un CRM commercial lourd.",
+      "Cabinet de DAF externalisés, 17 collaborateurs. On veut une base de contacts partagée — clients, prospects, anciens clients — et un moyen de garder le contexte de nos relations. On n'a pas besoin d'un outil conçu pour des équipes commerciales.",
+      "On est 17, on fait de la direction financière externalisée. Notre problème : pas de base de contacts partagée, chacun gère ses relations dans son coin. On cherche quelque chose de léger pour centraliser ça et suivre nos interactions."
+    ]
+  },
+  {
+    "id": "P11",
+    "category": "Autres profils B2B non-commerciaux",
+    "category_num": 3,
+    "variants": [
+      "On est une société d'immobilier commercial, 15 personnes. Notre fondateur a toutes ses relations dans Outlook, on essaie de partager ça entre nous mais c'est le bazar — doublons, contacts mal nommés, pas de rigueur. On cherche une solution simple.",
+      "Société d'immobilier commercial, équipe de 15. Toutes les relations clés sont dans l'Outlook du fondateur et on n'arrive pas à les partager proprement. Doublons partout, nommage anarchique. On cherche un outil qui mette de l'ordre dans tout ça.",
+      "On est 15 dans l'immobilier commercial. Le fondateur centralise tous les contacts dans son Outlook mais le partage est chaotique — doublons, formats différents, données manquantes. On cherche une solution simple pour structurer et partager la base."
+    ]
+  },
+  {
+    "id": "P12",
+    "category": "Prompts indirects",
+    "category_num": 4,
+    "variants": [
+      "Comment les cabinets d'avocats gèrent leur développement commercial quand ils n'ont pas d'équipe commerciale ?",
+      "Quelles pratiques et quels outils utilisent les cabinets d'avocats pour développer leur clientèle sans avoir de commerciaux en interne ?",
+      "Comment un cabinet d'avocats peut structurer son bizdev sans département commercial ? Quelles approches fonctionnent ?"
+    ]
+  },
+  {
+    "id": "P13",
+    "category": "Prompts indirects",
+    "category_num": 4,
+    "variants": [
+      "Quels outils utilisent les professions libérales pour envoyer leurs vœux de fin d'année à leurs contacts de façon professionnelle ?",
+      "Pour les vœux de fin d'année, quelles solutions permettent aux professionnels libéraux (avocats, experts-comptables, architectes) d'envoyer des messages personnalisés à leur réseau ?",
+      "Je cherche comment envoyer des vœux de nouvelle année de façon professionnelle à tous mes contacts clients. Quels outils utilisent les professions libérales pour ça ?"
+    ]
+  },
+  {
+    "id": "P14",
+    "category": "Prompts indirects",
+    "category_num": 4,
+    "variants": [
+      "Comment centraliser et partager une base de contacts entre plusieurs associés d'un cabinet de conseil ?",
+      "On est plusieurs associés avec chacun notre propre carnet d'adresses. Comment mettre en place une base de contacts partagée dans un cabinet de conseil ?",
+      "Dans un cabinet de conseil multi-associés, comment s'organise la gestion partagée des contacts ? Quelles solutions recommandez-vous ?"
+    ]
+  },
+  {
+    "id": "P15",
+    "category": "Prompts indirects",
+    "category_num": 4,
+    "variants": [
+      "Comment gérer ses contacts professionnels quand on est avocat indépendant ou en petit cabinet ?",
+      "Avocat solo ou en petite structure, quels sont les bons réflexes et outils pour bien gérer son réseau de contacts professionnels ?",
+      "Je suis avocat dans un petit cabinet. Comment structurer la gestion de mes contacts clients, prescripteurs et partenaires ?"
+    ]
+  },
+  {
+    "id": "P16",
+    "category": "Comparatifs",
+    "category_num": 5,
+    "variants": [
+      "Alternatives à Salesforce pour une PME de services B2B qui n'a pas besoin d'un outil commercial lourd, budget 50-100€/mois ?",
+      "PME de services B2B, on cherche un CRM léger en remplacement de Salesforce. Budget 50 à 100€/mois. On n'a pas besoin de toutes les fonctionnalités commerciales, juste une bonne gestion de contacts et de relations.",
+      "Quelles sont les meilleures alternatives à Salesforce pour une petite société de services B2B ? On cherche quelque chose de plus simple et moins cher — autour de 50-100€/mois."
+    ]
+  },
+  {
+    "id": "P17",
+    "category": "Comparatifs",
+    "category_num": 5,
+    "variants": [
+      "CRM simple pour cabinet conseil B2B, doit s'intégrer avec Outlook, équipe de 10 personnes. Comparatif des meilleures options.",
+      "Je cherche un comparatif de CRM simples pour un cabinet de conseil B2B de 10 personnes. Critère indispensable : une bonne intégration avec Outlook. Quelles sont les meilleures options du marché ?",
+      "Quels CRM recommandes-tu pour un cabinet de conseil B2B, une dizaine de personnes, avec une intégration Outlook solide ? Je veux un vrai comparatif des solutions disponibles."
+    ]
+  },
+  {
+    "id": "P18",
+    "category": "Comparatifs",
+    "category_num": 5,
+    "variants": [
+      "Notion vs CRM dédié pour gérer les contacts d'un cabinet de conseil de 8 personnes ?",
+      "Pour un cabinet de conseil de 8 personnes, est-ce qu'un outil comme Notion peut remplacer un CRM dédié pour la gestion des contacts ? Avantages et inconvénients ?",
+      "On hésite entre utiliser Notion ou adopter un vrai CRM pour gérer nos contacts dans notre cabinet de conseil (8 personnes). Qu'est-ce qui est le mieux dans notre cas ?"
+    ]
+  },
+  {
+    "id": "P19",
+    "category": "Comparatifs",
+    "category_num": 5,
+    "variants": [
+      "Quels CRM sont adaptés aux professions libérales en France — avocats, architectes, notaires ? Je cherche quelque chose de simple, pas un outil pour équipes commerciales.",
+      "En France, quels outils CRM sont vraiment adaptés aux professions libérales comme les avocats, notaires ou architectes ? Pas besoin d'un outil commercial, juste une gestion relationnelle simple.",
+      "Je cherche un CRM pensé pour les professions libérales françaises (avocats, architectes, consultants). Simple, sans les fonctionnalités commerciales des CRM classiques. Que recommandez-vous ?"
+    ]
+  },
+  {
+    "id": "P20",
+    "category": "Comparatifs",
+    "category_num": 5,
+    "variants": [
+      "On utilise Microsoft 365, on cherche un outil de gestion de contacts qui s'intègre bien avec Outlook et Teams. On est un cabinet de conseil B2B de 20 personnes.",
+      "Cabinet de conseil B2B, 20 personnes, tout le monde est sur Microsoft 365. On cherche un outil de gestion de contacts bien intégré à Outlook et Teams. Qu'est-ce que vous recommandez ?",
+      "On est une vingtaine dans un cabinet de conseil, on utilise Microsoft 365. On cherche une solution de gestion de contacts et relations qui se connecte à Outlook et Teams de façon native."
+    ]
+  },
+  {
+    "id": "P21",
+    "category": "Brand direct",
+    "category_num": 6,
+    "variants": [
+      "C'est quoi Anaba ? À qui ça s'adresse ?",
+      "Je viens de voir Anaba mentionné dans une discussion. C'est quoi comme outil et pour qui c'est fait ?",
+      "Quelqu'un peut m'expliquer ce qu'est Anaba et quelle est la cible de ce logiciel ?"
+    ]
+  },
+  {
+    "id": "P22",
+    "category": "Brand direct",
+    "category_num": 6,
+    "variants": [
+      "Tu connais le logiciel anaba.fr ? Qu'est-ce que c'est exactement ?",
+      "Est-ce que tu as des infos sur anaba.fr ? Quel type de logiciel c'est ?",
+      "J'ai entendu parler d'Anaba, le logiciel disponible sur anaba.fr. Tu peux me dire ce que c'est ?"
+    ]
+  }
+]
