@@ -7,14 +7,14 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 Base = declarative_base()
 
-
 class Run(Base):
     __tablename__ = "runs"
 
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
-    iso_week = Column(String(10), nullable=False)   # e.g. "2026-W17"
-    run_number = Column(Integer, nullable=False)    # 1, 2 or 3
+    iso_week = Column(String(10), nullable=False)
+    run_number = Column(Integer, nullable=False)
+    model = Column(String(50), nullable=True, default="claude-haiku-4-5")  # NOUVEAU
     score_global = Column(Integer, nullable=False)
     score_cat1 = Column(Integer, nullable=False, default=0)
     score_cat2 = Column(Integer, nullable=False, default=0)
@@ -22,7 +22,7 @@ class Run(Base):
     score_cat4 = Column(Integer, nullable=False, default=0)
     score_cat5 = Column(Integer, nullable=False, default=0)
     score_cat6 = Column(Integer, nullable=False, default=0)
-    citation_rate = Column(Float, nullable=False)   # percentage 0-100
+    citation_rate = Column(Float, nullable=False)
     avg_rank = Column(Float, nullable=True)
     brand_cited = Column(Boolean, nullable=False, default=False)
     brand_position_avg = Column(Float, nullable=True)
@@ -42,6 +42,7 @@ class Detail(Base):
     position = Column(Integer, nullable=True)
     score = Column(Integer, nullable=False)
     response_preview = Column(String(150), nullable=False)
+    model = Column(String(50), nullable=True, default="claude-haiku-4-5")  # NOUVEAU
 
     run = relationship("Run", back_populates="details")
 
@@ -52,12 +53,10 @@ def get_engine():
         return create_engine(url)
     return create_engine("sqlite:///tracker.db")
 
-
 def get_session():
     engine = get_engine()
     Session = sessionmaker(bind=engine)
     return Session()
-
 
 def init_db():
     engine = get_engine()
