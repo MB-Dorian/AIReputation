@@ -18,15 +18,7 @@ NOTION_DETAILS_DB_ID = os.getenv("NOTION_DETAILS_DB_ID", "34b6e7a6-7b47-814c-b5a
 
 SCORE_MAX = 540
 
-_HEADERS = {
-    "Authorization": f"Bearer {NOTION_TOKEN}",
-    "Notion-Version": "2022-06-28",
-    "Content-Type": "application/json",
-}
-
-
 def _headers():
-    """Return headers with the current token (re-reads env in case it changed)."""
     token = os.getenv("NOTION_TOKEN", NOTION_TOKEN)
     return {
         "Authorization": f"Bearer {token}",
@@ -34,10 +26,8 @@ def _headers():
         "Content-Type": "application/json",
     }
 
-
 def _rich_text(value: str) -> list:
     return [{"type": "text", "text": {"content": str(value)}}]
-
 
 def _create_page(database_id: str, properties: dict) -> dict:
     url = f"{NOTION_BASE_URL}/pages"
@@ -49,16 +39,11 @@ def _create_page(database_id: str, properties: dict) -> dict:
     resp.raise_for_status()
     return resp.json()
 
-
 def push_run(run_data: dict, details: list) -> None:
-    """
-    Push a completed run to Notion.
+    model = run_data.get("model", "claude-haiku-4-5")  # NOUVEAU
 
-    run_data keys: date (str ISO), iso_week, run_number, score_global,
-                   citation_rate, avg_rank, score_cat1..score_cat6
-    details keys:  prompt_id, category, cited, position, score, response_preview
-    """
-    semaine_title = f"{run_data['iso_week']} \u2014 Run {run_data['run_number']}"
+    # MODIFIÉ — ajout du modèle dans le titre pour distinguer les entrées
+    semaine_title = f"{run_data['iso_week']} — Run {run_data['run_number']} — {model}"
 
     # --- Runs page ---
     run_props = {
@@ -66,6 +51,7 @@ def push_run(run_data: dict, details: list) -> None:
         "Date": {"date": {"start": str(run_data["date"])}},
         "ISO Week": {"rich_text": _rich_text(run_data["iso_week"])},
         "Run Number": {"number": run_data["run_number"]},
+        "Modèle": {"select": {"name": model}},  # NOUVEAU
         "Score Global": {"number": run_data["score_global"]},
         "Score Max": {"number": SCORE_MAX},
         "Citation Rate %": {"number": run_data["citation_rate"]},
@@ -77,10 +63,8 @@ def push_run(run_data: dict, details: list) -> None:
         "Score Cat6": {"number": run_data["score_cat6"]},
         "Brand Cited": {"checkbox": bool(run_data.get("brand_cited", False))},
         "Brand Position Avg": {"number": run_data.get("brand_position_avg")},
+        "Avg Rank": {"number": run_data.get("avg_rank")},
     }
-
-    avg_rank = run_data.get("avg_rank")
-    run_props["Avg Rank"] = {"number": avg_rank}  # None is valid (null in Notion)
 
     run_page = _create_page(NOTION_RUNS_DB_ID, run_props)
     log.info("Notion run page created: %s", run_page.get("id"))
@@ -95,6 +79,7 @@ def push_run(run_data: dict, details: list) -> None:
             "Prompt": {"title": _rich_text(detail["prompt_id"])},
             "Semaine": {"rich_text": _rich_text(run_data["iso_week"])},
             "Run Number": {"number": run_data["run_number"]},
+            "Modèle": {"select": {"name": detail.get("model", model)}},  # NOUVEAU
             "Catégorie": {"select": {"name": detail["category"]}},
             "Cité": {"checkbox": bool(detail["cited"])},
             "Position": {"number": position},
