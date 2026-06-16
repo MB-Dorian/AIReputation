@@ -4,6 +4,7 @@ notion_client.py — Push run results to Notion via REST API.
 
 import os
 import logging
+import time
 import requests
 from dotenv import load_dotenv
 
@@ -35,9 +36,16 @@ def _create_page(database_id: str, properties: dict) -> dict:
         "parent": {"database_id": database_id},
         "properties": properties,
     }
-    resp = requests.post(url, headers=_headers(), json=payload, timeout=30)
-    resp.raise_for_status()
-    return resp.json()
+    for attempt in range(1, 4):
+        try:
+            resp = requests.post(url, headers=_headers(), json=payload, timeout=60)
+            resp.raise_for_status()
+            return resp.json()
+        except (requests.ReadTimeout, requests.ConnectionError) as exc:
+            if attempt == 3:
+                raise
+            log.warning("Notion request failed (attempt %d/3): %s — retrying in 5s", attempt, exc)
+            time.sleep(5)
 
 def push_run(run_data: dict, details: list) -> None:
     model = run_data.get("model", "claude-haiku-4-5")  # NOUVEAU
