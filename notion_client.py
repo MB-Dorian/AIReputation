@@ -14,8 +14,10 @@ log = logging.getLogger(__name__)
 
 NOTION_BASE_URL = "https://api.notion.com/v1"
 NOTION_TOKEN = os.getenv("NOTION_TOKEN", "")
-NOTION_RUNS_DB_ID = os.getenv("NOTION_RUNS_DB_ID", "34b6e7a6-7b47-81c9-84d7-cd5c064ced21")
-NOTION_DETAILS_DB_ID = os.getenv("NOTION_DETAILS_DB_ID", "34b6e7a6-7b47-814c-b5a9-e73c94449737")
+NOTION_RUNS_DB_ID = os.environ.get("NOTION_RUNS_DB_ID", "34b6e7a6-7b47-81c9-84d7-cd5c064ced21")
+NOTION_DETAILS_DB_ID = os.environ.get("NOTION_DETAILS_DB_ID", "34b6e7a6-7b47-814c-b5a9-e73c94449737")
+
+print(f"[notion_client] NOTION_RUNS_DB_ID={NOTION_RUNS_DB_ID[:8]}…")
 
 SCORE_MAX = 540
 
@@ -39,6 +41,8 @@ def _create_page(database_id: str, properties: dict) -> dict:
     for attempt in range(1, 4):
         try:
             resp = requests.post(url, headers=_headers(), json=payload, timeout=60)
+            if not resp.ok:
+                print(f"Notion error {resp.status_code}: {resp.text}")
             resp.raise_for_status()
             return resp.json()
         except (requests.ReadTimeout, requests.ConnectionError) as exc:
@@ -74,6 +78,7 @@ def push_run(run_data: dict, details: list) -> None:
         "Avg Rank": {"number": run_data.get("avg_rank")},
     }
 
+    print(f"[notion_client] run_props={run_props}")
     run_page = _create_page(NOTION_RUNS_DB_ID, run_props)
     log.info("Notion run page created: %s", run_page.get("id"))
 
