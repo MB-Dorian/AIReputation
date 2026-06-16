@@ -204,6 +204,7 @@ def parse_detail(page: dict) -> dict:
         "cited": props.get("Cité", {}).get("checkbox", False),
         "position": _number(props, "Position"),
         "score": _number(props, "Score"),
+        "response": _rich_text_value(props, "Réponse"),
     }
 
 
@@ -240,6 +241,7 @@ def build_runs_detail(detail_pages: list[dict], prompts_map: dict) -> dict:
             "cited": d["cited"],
             "position": d["position"],
             "score": int(d["score"]) if d["score"] is not None else 0,
+            "response": d.get("response") or "",
         })
 
     for rows in by_model.values():

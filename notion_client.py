@@ -98,6 +98,7 @@ def push_run(run_data: dict, details: list) -> None:
             "Position": {"number": position},
             "Score": {"number": detail["score"]},
             "Response Preview": {"rich_text": _rich_text(preview)},
+            "Réponse": {"rich_text": _rich_text(detail.get("response_text", ""))},
         }
 
         try:

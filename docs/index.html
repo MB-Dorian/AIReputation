@@ -196,6 +196,23 @@
     .cited-no  { color: var(--red); }
     .pos-val   { color: var(--muted); }
 
+    .prompt-row { cursor: pointer; }
+    .prompt-row:hover td { background: rgba(255,255,255,.04); }
+    .chevron { display: inline-block; width: 14px; color: var(--muted); font-size: 0.7rem; user-select: none; }
+    .accordion-row td { padding: 0; border-bottom: 1px solid var(--border); }
+    .response-pre {
+      background: rgba(255,255,255,.02);
+      border-top: 1px solid var(--border);
+      padding: 14px 18px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+      font-family: inherit;
+      line-height: 1.6;
+      margin: 0;
+    }
+
     #error-msg {
       display: none;
       background: rgba(239,68,68,.1);
@@ -368,18 +385,27 @@ function truncate(str, n) {
   return str.length > n ? str.slice(0, n) + '…' : str;
 }
 
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function buildTable(rows) {
   if (!rows || !rows.length) return '<p style="padding:20px;color:var(--muted)">Aucune donnée.</p>';
-  const body = rows.map(r => `
-    <tr>
-      <td><span class="prompt-cell" title="${r.prompt_text.replace(/"/g, '&quot;')}">${truncate(r.prompt_text, 80)}</span></td>
+  const body = rows.map((r, i) => `
+    <tr class="prompt-row" data-idx="${i}">
+      <td style="width:18px;padding-right:4px"><span class="chevron">▶</span></td>
+      <td><span class="prompt-cell" title="${escHtml(r.prompt_text)}">${truncate(r.prompt_text, 80)}</span></td>
       <td><span class="cat-badge">Cat ${r.category}</span></td>
       <td class="${r.cited ? 'cited-yes' : 'cited-no'}">${r.cited ? '✅' : '❌'}</td>
       <td class="pos-val">${r.position !== null && r.position !== undefined ? r.position : '—'}</td>
       <td>${r.score}</td>
+    </tr>
+    <tr class="accordion-row" data-idx="${i}" style="display:none">
+      <td colspan="6"><pre class="response-pre">${escHtml(r.response) || '(aucune réponse enregistrée)'}</pre></td>
     </tr>`).join('');
   return `<table>
     <thead><tr>
+      <th style="width:18px"></th>
       <th>Prompt</th><th>Catégorie</th><th>Cité ?</th><th>Position</th><th>Score</th>
     </tr></thead>
     <tbody>${body}</tbody>
@@ -394,6 +420,20 @@ function renderDetail(data) {
   const wrap    = document.getElementById('detail-table-wrap');
 
   section.style.display = 'block';
+
+  wrap.addEventListener('click', e => {
+    const row = e.target.closest('.prompt-row');
+    if (!row) return;
+    const idx = row.dataset.idx;
+    const acc = wrap.querySelector(`.accordion-row[data-idx="${idx}"]`);
+    const isOpen = acc.style.display !== 'none';
+    wrap.querySelectorAll('.accordion-row').forEach(r => { r.style.display = 'none'; });
+    wrap.querySelectorAll('.chevron').forEach(c => { c.textContent = '▶'; });
+    if (!isOpen) {
+      acc.style.display = '';
+      row.querySelector('.chevron').textContent = '▼';
+    }
+  });
 
   const models = data.models.filter(m => data.runs_detail[m]);
   let activeModel = models[0];

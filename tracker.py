@@ -145,6 +145,7 @@ def run():
         parsed["category"] = category
         parsed["category_num"] = category_num
         parsed["model"] = model_label  # NOUVEAU
+        parsed["response_text"] = response_text[:1900] if response_text else ""
         details_data.append(parsed)
         log.info(
             "[%s] cited=%s | position=%s | score=%d",
