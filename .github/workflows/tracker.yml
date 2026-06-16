@@ -50,6 +50,7 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_RUNS_DB_ID: ${{ secrets.NOTION_RUNS_DB_ID }}
+          NOTION_DETAILS_DB_ID: ${{ secrets.NOTION_DETAILS_DB_ID }}
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
