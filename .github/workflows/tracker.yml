@@ -33,4 +33,25 @@ jobs:
           NOTION_RUNS_DB_ID: ${{ secrets.NOTION_RUNS_DB_ID }}
           NOTION_DETAILS_DB_ID: ${{ secrets.NOTION_DETAILS_DB_ID }}
           RUN_NUMBER: ${{ github.run_number }}
-          MODEL_NAME: ${{ matrix.model }}  # NOUVEAU
+          MODEL_NAME: ${{ matrix.model }}
+
+  generate-dashboard:
+    runs-on: ubuntu-latest
+    needs: run-tracker
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests python-dotenv
+      - name: Generate dashboard data
+        run: python generate_dashboard.py
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_RUNS_DB_ID: ${{ secrets.NOTION_RUNS_DB_ID }}
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs

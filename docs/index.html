@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anaba — AI Reputation Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d1a;
+      --surface:   #161628;
+      --border:    #252540;
+      --violet:    #8b5cf6;
+      --orange:    #f97316;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --green:     #22c55e;
+      --red:       #ef4444;
+      --radius:    10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 36px;
+    }
+    header h1 {
+      font-size: 1.45rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    header h1 span { color: var(--violet); }
+    .week-badge {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    /* KPI grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px 24px;
+    }
+    .kpi-card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .kpi-card-title.violet { color: var(--violet); }
+    .kpi-card-title.orange { color: var(--orange); }
+
+    .kpi-rows { display: flex; flex-direction: column; gap: 14px; }
+    .kpi-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kpi-label { color: var(--muted); font-size: 0.85rem; }
+    .kpi-value { font-size: 1.25rem; font-weight: 600; }
+    .kpi-value.big { font-size: 1.7rem; }
+
+    .delta {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .delta.pos { background: rgba(34,197,94,.15); color: var(--green); }
+    .delta.neg { background: rgba(239,68,68,.15); color: var(--red); }
+    .delta.neu { background: var(--border); color: var(--muted); }
+
+    /* Charts */
+    .chart-section { margin-bottom: 32px; }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+    .chart-card h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 20px;
+    }
+    .chart-wrap { position: relative; height: 260px; }
+
+    /* Footer */
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    #error-msg {
+      display: none;
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3);
+      color: var(--red);
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1><span>Anaba</span> — AI Reputation Tracker</h1>
+    <span class="week-badge" id="week-label">…</span>
+  </header>
+
+  <div id="error-msg"></div>
+
+  <div class="kpi-grid" id="kpi-grid">
+    <!-- filled by JS -->
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-card">
+      <h2>Score organique hebdomadaire</h2>
+      <div class="chart-wrap"><canvas id="chart-line"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-card">
+      <h2>Score par catégorie — dernière semaine</h2>
+      <div class="chart-wrap"><canvas id="chart-bar"></canvas></div>
+    </div>
+  </div>
+
+  <footer id="footer">Dernière update : …</footer>
+</div>
+
+<script>
+const COLORS = {
+  'claude-haiku-4-5': { line: '#8b5cf6', bar: 'rgba(139,92,246,0.75)', label: 'Claude Haiku 4.5', accent: 'violet' },
+  'sonar':            { line: '#f97316', bar: 'rgba(249,115,22,0.75)',  label: 'Perplexity Sonar', accent: 'orange' },
+};
+
+const CAT_LABELS = ['Cat 1', 'Cat 2', 'Cat 3', 'Cat 4', 'Cat 5'];
+
+const chartDefaults = {
+  color: '#e2e8f0',
+  plugins: { legend: { labels: { color: '#94a3b8', boxWidth: 12, padding: 16 } } },
+  scales: {
+    x: { ticks: { color: '#64748b' }, grid: { color: '#252540' } },
+    y: { ticks: { color: '#64748b' }, grid: { color: '#252540' } },
+  },
+};
+
+function fmt(v, suffix = '') {
+  if (v === null || v === undefined) return 'N/A';
+  return `${typeof v === 'number' ? v.toLocaleString('fr-FR') : v}${suffix}`;
+}
+
+function deltaEl(delta) {
+  if (delta === null || delta === undefined) return '';
+  const cls = delta > 0 ? 'pos' : delta < 0 ? 'neg' : 'neu';
+  const sign = delta > 0 ? '+' : '';
+  return `<span class="delta ${cls}">${sign}${delta}</span>`;
+}
+
+function buildKpiCard(model, kpi) {
+  const c = COLORS[model] || { label: model, accent: 'violet' };
+  return `
+    <div class="kpi-card">
+      <div class="kpi-card-title ${c.accent}">${c.label}</div>
+      <div class="kpi-rows">
+        <div class="kpi-row">
+          <span class="kpi-label">Score organique</span>
+          <span class="kpi-value big">${fmt(kpi.score)}<small style="font-size:.9rem;color:#64748b">/540</small></span>
+        </div>
+        <div class="kpi-row">
+          <span class="kpi-label">Évolution</span>
+          ${deltaEl(kpi.delta)}
+        </div>
+        <div class="kpi-row">
+          <span class="kpi-label">Taux de citation</span>
+          <span class="kpi-value">${fmt(kpi.citation_rate, '%')}</span>
+        </div>
+        <div class="kpi-row">
+          <span class="kpi-label">Position marque</span>
+          <span class="kpi-value">${fmt(kpi.brand_position)}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLineChart(data) {
+  const allWeeks = [...new Set(
+    data.models.flatMap(m => (data.weekly_scores[m] || []).map(w => w.week))
+  )].sort();
+
+  const datasets = data.models.map(model => {
+    const c = COLORS[model] || { line: '#8b5cf6', label: model };
+    const byWeek = Object.fromEntries((data.weekly_scores[model] || []).map(w => [w.week, w.score]));
+    return {
+      label: c.label,
+      data: allWeeks.map(w => byWeek[w] ?? null),
+      borderColor: c.line,
+      backgroundColor: c.line + '22',
+      tension: 0.35,
+      fill: true,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      spanGaps: false,
+    };
+  });
+
+  new Chart(document.getElementById('chart-line'), {
+    type: 'line',
+    data: { labels: allWeeks, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      ...chartDefaults,
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, min: 0, max: 540 },
+      },
+    },
+  });
+}
+
+function renderBarChart(data) {
+  const datasets = data.models.map(model => {
+    const c = COLORS[model] || { bar: 'rgba(139,92,246,0.75)', label: model };
+    const last = (data.weekly_scores[model] || []).at(-1);
+    return {
+      label: c.label,
+      data: last ? [last.cat1, last.cat2, last.cat3, last.cat4, last.cat5] : [0, 0, 0, 0, 0],
+      backgroundColor: c.bar,
+      borderRadius: 4,
+    };
+  });
+
+  new Chart(document.getElementById('chart-bar'), {
+    type: 'bar',
+    data: { labels: CAT_LABELS, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      ...chartDefaults,
+      plugins: {
+        ...chartDefaults.plugins,
+        legend: chartDefaults.plugins.legend,
+      },
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, min: 0 },
+      },
+    },
+  });
+}
+
+async function init() {
+  let data;
+  try {
+    const resp = await fetch('./data.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    data = await resp.json();
+  } catch (err) {
+    const el = document.getElementById('error-msg');
+    el.textContent = `Impossible de charger data.json : ${err.message}`;
+    el.style.display = 'block';
+    return;
+  }
+
+  document.getElementById('week-label').textContent = data.updated_at || '—';
+  document.getElementById('footer').textContent = `Dernière update : ${data.updated_at || '—'}`;
+
+  // KPI cards
+  const grid = document.getElementById('kpi-grid');
+  const byModel = data.last_run?.by_model || {};
+  grid.innerHTML = data.models.map(m => buildKpiCard(m, byModel[m] || {})).join('');
+
+  renderLineChart(data);
+  renderBarChart(data);
+}
+
+init();
+</script>
+</body>
+</html>

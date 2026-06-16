@@ -131,7 +131,7 @@ def run():
         pid = prompt_def["id"]
         category = prompt_def["category"]
         category_num = prompt_def["category_num"]
-        variant_text = prompt_def["variants"][variant_idx]
+        variant_text = prompt_def["variants"][variant_idx % len(prompt_def["variants"])]
         log.info("[%s] Sending prompt (cat %d): %s", pid, category_num, variant_text[:80])
 
         try:
