@@ -132,6 +132,70 @@
       font-size: 0.8rem;
     }
 
+    /* Detail tabs */
+    .detail-section { margin-bottom: 32px; }
+    .tab-bar { display: flex; gap: 0; }
+    .tab-btn {
+      padding: 8px 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: color .15s;
+    }
+    .tab-btn:first-child { border-radius: var(--radius) 0 0 0; }
+    .tab-btn:last-child  { border-radius: 0 var(--radius) 0 0; }
+    .tab-btn.active { color: var(--text); background: var(--surface); }
+    .tab-btn.violet.active { color: var(--violet); }
+    .tab-btn.orange.active { color: var(--orange); }
+
+    .detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0 var(--radius) var(--radius) var(--radius);
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.025); }
+    .prompt-cell {
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: default;
+      color: var(--text);
+    }
+    .cat-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--border);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .cited-yes { color: var(--green); }
+    .cited-no  { color: var(--red); }
+    .pos-val   { color: var(--muted); }
+
     #error-msg {
       display: none;
       background: rgba(239,68,68,.1);
@@ -167,6 +231,13 @@
     <div class="chart-card">
       <h2>Score par catégorie — dernière semaine</h2>
       <div class="chart-wrap"><canvas id="chart-bar"></canvas></div>
+    </div>
+  </div>
+
+  <div class="detail-section" id="detail-section" style="display:none">
+    <div class="tab-bar" id="detail-tabs"></div>
+    <div class="detail-card">
+      <div id="detail-table-wrap"></div>
     </div>
   </div>
 
@@ -293,6 +364,61 @@ function renderBarChart(data) {
   });
 }
 
+function truncate(str, n) {
+  return str.length > n ? str.slice(0, n) + '…' : str;
+}
+
+function buildTable(rows) {
+  if (!rows || !rows.length) return '<p style="padding:20px;color:var(--muted)">Aucune donnée.</p>';
+  const body = rows.map(r => `
+    <tr>
+      <td><span class="prompt-cell" title="${r.prompt_text.replace(/"/g, '&quot;')}">${truncate(r.prompt_text, 80)}</span></td>
+      <td><span class="cat-badge">Cat ${r.category}</span></td>
+      <td class="${r.cited ? 'cited-yes' : 'cited-no'}">${r.cited ? '✅' : '❌'}</td>
+      <td class="pos-val">${r.position !== null && r.position !== undefined ? r.position : '—'}</td>
+      <td>${r.score}</td>
+    </tr>`).join('');
+  return `<table>
+    <thead><tr>
+      <th>Prompt</th><th>Catégorie</th><th>Cité ?</th><th>Position</th><th>Score</th>
+    </tr></thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
+function renderDetail(data) {
+  if (!data.runs_detail || !Object.keys(data.runs_detail).length) return;
+
+  const section = document.getElementById('detail-section');
+  const tabBar  = document.getElementById('detail-tabs');
+  const wrap    = document.getElementById('detail-table-wrap');
+
+  section.style.display = 'block';
+
+  const models = data.models.filter(m => data.runs_detail[m]);
+  let activeModel = models[0];
+
+  function render() {
+    wrap.innerHTML = buildTable(data.runs_detail[activeModel] || []);
+  }
+
+  tabBar.innerHTML = models.map(m => {
+    const c = COLORS[m] || { label: m, accent: 'violet' };
+    return `<button class="tab-btn ${c.accent}" data-model="${m}">${c.label}</button>`;
+  }).join('');
+
+  tabBar.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeModel = btn.dataset.model;
+      tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      render();
+    });
+  });
+
+  tabBar.querySelector('.tab-btn')?.classList.add('active');
+  render();
+}
+
 async function init() {
   let data;
   try {
@@ -316,6 +442,7 @@ async function init() {
 
   renderLineChart(data);
   renderBarChart(data);
+  renderDetail(data);
 }
 
 init();

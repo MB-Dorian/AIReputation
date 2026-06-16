@@ -16,8 +16,11 @@ load_dotenv()
 
 NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 NOTION_RUNS_DB_ID = os.environ["NOTION_RUNS_DB_ID"]
+NOTION_DETAILS_DB_ID = os.environ["NOTION_DETAILS_DB_ID"]
 NOTION_BASE_URL = "https://api.notion.com/v1"
 SCORE_MAX = 540
+
+PROMPTS_FILE = os.path.join(os.path.dirname(__file__), "prompts.json")
 
 MODEL_MAP = {
     "claude-haiku-4-5-20251001": "claude-haiku-4-5",
@@ -68,6 +71,11 @@ def _number(props: dict, key: str) -> float | None:
 def _select(props: dict, key: str) -> str | None:
     sel = props.get(key, {}).get("select")
     return sel["name"] if sel else None
+
+
+def _title_value(props: dict, key: str) -> str | None:
+    items = props.get(key, {}).get("title", [])
+    return items[0]["text"]["content"] if items else None
 
 
 def parse_page(page: dict) -> dict:
@@ -159,6 +167,87 @@ def build_data_json(runs: list[dict]) -> dict:
     }
 
 
+def fetch_details(week: str) -> list[dict]:
+    """Fetch detail pages for the given ISO week (server-side filter)."""
+    pages = []
+    url = f"{NOTION_BASE_URL}/databases/{NOTION_DETAILS_DB_ID}/query"
+    cursor = None
+
+    while True:
+        payload: dict = {
+            "page_size": 100,
+            "filter": {"property": "Semaine", "rich_text": {"equals": week}},
+        }
+        if cursor:
+            payload["start_cursor"] = cursor
+
+        resp = requests.post(url, headers=_headers(), json=payload, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        pages.extend(data["results"])
+
+        if not data.get("has_more"):
+            break
+        cursor = data.get("next_cursor")
+
+    return pages
+
+
+def parse_detail(page: dict) -> dict:
+    props = page["properties"]
+    modele_raw = _select(props, "Modèle")
+    return {
+        "prompt_id": _title_value(props, "Prompt"),
+        "run_number": _number(props, "Run Number"),
+        "model": MODEL_MAP.get(modele_raw, modele_raw) if modele_raw else None,
+        "category": _select(props, "Catégorie"),
+        "cited": props.get("Cité", {}).get("checkbox", False),
+        "position": _number(props, "Position"),
+        "score": _number(props, "Score"),
+    }
+
+
+def load_prompts() -> dict[str, dict]:
+    """Return prompt_id → {category_num, text} from prompts.json."""
+    with open(PROMPTS_FILE, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    return {
+        p["id"]: {"category_num": p["category_num"], "text": p["variants"][0]}
+        for p in raw
+    }
+
+
+def build_runs_detail(detail_pages: list[dict], prompts_map: dict) -> dict:
+    """
+    For each (model, prompt_id) keep the row with the highest run_number,
+    then annotate with prompt text. Returns dict keyed by model.
+    """
+    best: dict[tuple, dict] = {}
+    for d in detail_pages:
+        if not d["model"] or not d["prompt_id"]:
+            continue
+        key = (d["model"], d["prompt_id"])
+        if key not in best or (d["run_number"] or 0) > (best[key]["run_number"] or 0):
+            best[key] = d
+
+    by_model: dict[str, list] = defaultdict(list)
+    for (model, pid), d in best.items():
+        info = prompts_map.get(pid, {})
+        by_model[model].append({
+            "prompt_id": pid,
+            "category": info.get("category_num", 0),
+            "prompt_text": info.get("text", ""),
+            "cited": d["cited"],
+            "position": d["position"],
+            "score": int(d["score"]) if d["score"] is not None else 0,
+        })
+
+    for rows in by_model.values():
+        rows.sort(key=lambda r: (r["category"], r["prompt_id"]))
+
+    return dict(by_model)
+
+
 def main():
     os.makedirs("docs", exist_ok=True)
 
@@ -171,12 +260,22 @@ def main():
     print(f"  → {len(runs)} valid runs (with ISO Week + Modèle)")
 
     data = build_data_json(runs)
+    current_week = data["updated_at"]
+
+    print(f"Fetching details for {current_week} from Notion…")
+    detail_pages_raw = fetch_details(current_week) if current_week else []
+    print(f"  → {len(detail_pages_raw)} detail pages fetched")
+    detail_pages = [parse_detail(p) for p in detail_pages_raw]
+
+    prompts_map = load_prompts()
+    data["runs_detail"] = build_runs_detail(detail_pages, prompts_map)
 
     out_path = os.path.join("docs", "data.json")
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print(f"  → {out_path} written ({len(data['models'])} models, {len(data.get('weekly_scores', {}).get(data['models'][0], []) if data['models'] else [])} weeks)")
+    n_weeks = len(data.get("weekly_scores", {}).get(data["models"][0], [])) if data["models"] else 0
+    print(f"  → {out_path} written ({len(data['models'])} models, {n_weeks} weeks, {len(detail_pages)} detail rows)")
 
 
 if __name__ == "__main__":
